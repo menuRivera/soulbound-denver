@@ -1,10 +1,26 @@
 import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
+import { defineChain } from 'viem'
+
+export const monadTestnet = defineChain({
+    id: 10143,
+    name: 'Monad Testnet',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Monad',
+        symbol: 'MON',
+    },
+    rpcUrls: {
+        default: { http: ['https://testnet-rpc.monad.xyz'] },
+    },
+    blockExplorers: {
+        default: { name: 'Monad Explorer', url: 'https://testnet.monadexplorer.com' },
+    },
+    testnet: true,
+})
 
 export const config = createConfig({
-    chains: [mainnet, sepolia],
+    chains: [monadTestnet],
     transports: {
-        [mainnet.id]: http(),
-        [sepolia.id]: http(),
+        [monadTestnet.id]: http(),
     },
 })

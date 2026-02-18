@@ -23,12 +23,12 @@ export function MintForm() {
     setError(null);
     try {
       if (!formData.name.trim()) throw new Error("Name is required");
-      if (!formData.image.trim()) throw new Error("Image URL is required");
+      if (!formData.image.trim()) throw new Error("Image is required");
 
       const metadata = {
         name: formData.name,
         description: formData.description,
-        image: formData.image,
+        image: formData.image, // Now contains data:image/...,base64,...
         external_url: formData.website || undefined,
       };
 
@@ -37,7 +37,7 @@ export function MintForm() {
 
       if (encoded.length > 90000) {
         throw new Error(
-          `Metadata too large: ${encoded.length} bytes (max ~90k)`,
+          `Metadata too large: ${encoded.length} bytes (max ~90k). Try a smaller image.`,
         );
       }
 
@@ -57,6 +57,24 @@ export function MintForm() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 65000) {
+      setError("File is too large! Please use an image under 65KB.");
+      return;
+    }
+    setError(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setFormData((prev) => ({ ...prev, image: result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -92,15 +110,17 @@ export function MintForm() {
 
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-300">
-            Image URL *
+            Image (Max 65KB) *
           </label>
           <input
-            name="image"
-            className="input-field"
-            placeholder="https://ipfs.io/ipfs/..."
-            value={formData.image}
-            onChange={handleChange}
+            type="file"
+            accept="image/*"
+            className="input-field cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+            onChange={handleFileChange}
           />
+          {formData.image && (
+            <p className="text-xs text-green-400 mt-1">Image loaded!</p>
+          )}
         </div>
 
         <div>

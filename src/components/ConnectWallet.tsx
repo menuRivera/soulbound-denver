@@ -1,13 +1,28 @@
 'use client'
 
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 
 export function ConnectWallet() {
-    const { address, isConnected } = useAccount()
+    const { address, isConnected, chainId } = useAccount()
     const { connectors, connect } = useConnect()
     const { disconnect } = useDisconnect()
+    const { switchChain } = useSwitchChain()
+
+    // 10143 is Monad Testnet
+    const isWrongNetwork = isConnected && chainId !== 10143
 
     if (isConnected) {
+        if (isWrongNetwork) {
+            return (
+                <button
+                    className="btn-primary bg-red-500 hover:bg-red-600"
+                    onClick={() => switchChain({ chainId: 10143 })}
+                >
+                    Switch to Monad
+                </button>
+            )
+        }
+
         return (
             <button className="btn-secondary" onClick={() => disconnect()}>
                 {address?.slice(0, 6)}...{address?.slice(-4)}

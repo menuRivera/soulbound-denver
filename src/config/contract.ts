@@ -1,7 +1,7 @@
 import { parseAbi } from 'viem'
 
 // TODO: Replace with deployed contract address
-export const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000' as const
+export const CONTRACT_ADDRESS = '0x767dad5E959F206Fb6671CC3419497c1f0bb8329' as const
 
 export const CONTRACT_ABI = parseAbi([
     // Config
